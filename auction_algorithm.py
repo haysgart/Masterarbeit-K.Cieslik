@@ -261,7 +261,7 @@ def price_raising_algorithm(auction):
                  
     finaliter=iter
     print("Done ")
-    
+    #f
     
     return finaliter-1, flow_value, sumofdemands,flow_details
     
