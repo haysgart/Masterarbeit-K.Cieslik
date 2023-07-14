@@ -221,11 +221,7 @@ print(len(instances))
 
 #calculate the assignment of items to buyers
 def calculate_assignment(tag):
-    #use the results of the price-raising algorithm to calculate the assignment of items to buyers
-    #for this, we need to know the valuations of the buyers and the prices of the items
-    #take the tag from the results and use it to find the corresponding instance
     for i in instances:
-        
         if i.tag==tag:
             current_instance=i
             break
@@ -279,15 +275,20 @@ def calculate_assignment(tag):
             current_instance.buyers[-1].valuations[j.productID]=0
     
     #create networkx graph using create_network
-    
-    #TODO: fertigmachen
+    G,a=current_instance.create_network()
+    #for each buyer, add a node with name i.buyerID+"'''",subset=1
+    for i in current_instance.buyers:
+        G.add_node(i.buyerID+"'''",subset=1)
+        G.add_edge(i.buyerID+"'''",i.buyerID,capacity=i.demand)
+    #for each product, add a edge from i.buyerID+"'''" to i.productID ,capacity=i.supply
 
-    drawgraph(G)
+    for i in current_instance.products:
+        G.add_edge(i.buyerID+"'''",i.productID,capacity=i.supply)
+    #find the maximum flow
+    flow_value, flow_dict = nx.maximum_flow(G, "B0'''", "P0")
+    #print(flow_value)
+
     return current_instance
-
-#a=calculate_assignment(instances[3].tag)
-#print(a.omega1,a.omega2)
-
 
 
 #transfort the results into a dataframe
@@ -411,13 +412,9 @@ plot10.savefig("facetgrid10.pdf")
 
 
 
-
-
-
-
 def monotony_analysis(instances,results,tag):
     #for a given tag, create a copy c of the instance and change the parameters:
-    # for c, increase suppy by 10%
+    # for c, increase supply
     # then run the price-raising algorithm on c 
     #at last compare the results of the price-raising algorithm on the original instance and on c   
     test_supply=True
@@ -481,6 +478,5 @@ def monotony_analysis(instances,results,tag):
     
 
     
-
 #for tags in [instances[i].tag for i in range(len(instances))]:
     #monotony_analysis(instances,results,tags)
